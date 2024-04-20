@@ -7,12 +7,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DAO implements Dao {
+public class DAO implements Dao<Dto> {
     private int nextId;
     private Connection conn = DbConnection.getConnection();
 
     @Override
-    public Object findById(int id){
+    public CarDto findById(int id){
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Car WHERE id=" + id+";");
@@ -74,7 +74,7 @@ public class DAO implements Dao {
     public boolean update(Dto dto) {
         try {
             Statement stmt = conn.createStatement();
-            int i = stmt.executeUpdate("Update Car Set Make =?, Model = ?, Year = ?,Color = ?,Vin = ? where id ="+dto.getId());
+            int i = stmt.executeUpdate("Update Car Set Make =?, Model = ?, Year = ?,Color = ?,Vin = ? where id ="+dto.getId()+";");
             if(i == 1){
                 return true;
 
@@ -87,25 +87,32 @@ public class DAO implements Dao {
     }
 
     @Override
-    public boolean create(Dto dto) {
-        try{
-        Statement stmt = conn.createStatement();
-        int i = stmt.executeUpdate("Insert into Car( Make, Model, Year,Color,Vin) Values(?,?,?,?,?)");
-            if(i ==1){
-            return true;
+    public Dto create(Dto dto) {
+        try {
+            Statement stmt = conn.createStatement();
+            String sql = String.format("INSERT INTO Car (id, Make, Model, Year, Color, Vin) VALUES (?, ?,?,?, ?, ?);",dto.getId(), dto.getMake(),dto.getModel(),dto.getYear(),dto.getColor(), dto.getVin());
+
+            stmt.executeUpdate(sql);
+
+            ResultSet rs = stmt.getGeneratedKeys();
+
+            if (rs.next())
+            {
+                return findById(rs.getInt(1));
             }
         }
-        catch (SQLException ex){
-            ex.printStackTrace();
+        catch(SQLException e)
+        {
+            e.printStackTrace();
         }
-        return false;
+        return null;
     }
 
     @Override
     public boolean delete(int id) {
         try {
             Statement stmt = conn.createStatement();
-            int i = stmt.executeUpdate("Delete from Car Where id = "+id);
+            int i = stmt.executeUpdate("Delete from Car Where id = "+id+";");
             if(i ==1){
                 return true;
             }

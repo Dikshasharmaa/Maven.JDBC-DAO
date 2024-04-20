@@ -1,7 +1,6 @@
 package daos;
 import com.mysql.cj.jdbc.Driver;
 import java.sql.Connection;
-//import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -22,7 +21,5 @@ public class DbConnection {
             throw new RuntimeException("Error connecting to the database", ex);
         }
     }
-    public static void main(String[] args){
 
-    }
 }
