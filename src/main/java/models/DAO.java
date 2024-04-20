@@ -52,11 +52,11 @@ public class DAO implements Dao<Dto> {
 
     @Override
     public List findAll() {
-        ArrayList<CarDto> car = null;
+        ArrayList<CarDto> car = new ArrayList<>();
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Car ;");
-            car = new ArrayList<>();
+            //car = new ArrayList<>();
 
             while (rs.next()) {
                 CarDto c = extractUserFromResultSet(rs);
@@ -73,8 +73,18 @@ public class DAO implements Dao<Dto> {
     @Override
     public boolean update(Dto dto) {
         try {
-            Statement stmt = conn.createStatement();
-            int i = stmt.executeUpdate("Update Car Set Make =?, Model = ?, Year = ?,Color = ?,Vin = ? where id ="+dto.getId()+";");
+            PreparedStatement stmt = conn.prepareStatement("Update Car Set Make =?, Model = ?, Year = ?,Color = ?,Vin = ? where id = ?");
+
+            // Set values for placeholders
+
+            stmt.setString(1,dto.getMake());
+            stmt.setString(2, dto.getModel());
+            stmt.setInt(3,dto.getYear());
+            stmt.setString(4,dto.getColor());
+            stmt.setString(5,dto.getVin());
+            stmt.setInt(6,dto.getId());
+            int i = stmt.executeUpdate();
+
             if(i == 1){
                 return true;
 
@@ -108,13 +118,14 @@ public class DAO implements Dao<Dto> {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     // Assuming findById returns the same type as Dto
-                    return findById(rs.getInt(1));
+//                    return findById(rs.getInt(1));
+                    dto.setId(rs.getInt(1));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return dto;
     }
 
 
@@ -132,5 +143,18 @@ public class DAO implements Dao<Dto> {
         }
 
         return false;
+    }
+    public int findCount() {
+        int count =0;
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT count(*) FROM Car ;");
+            rs.next();
+            count = rs.getInt(1);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return count;
     }
 }

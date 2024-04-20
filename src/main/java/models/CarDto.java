@@ -12,16 +12,8 @@ public class CarDto implements Dto {
     public CarDto(){
     }
 
-    public CarDto(int id, String make, String model, int year, String color, String vin) {
-        this.id = id;
-        this.make = make;
-        this.model = model;
-        this.year = year;
-        this.color = color;
-        this.vin = vin;
-    }
-
     public CarDto(String make, String model, int year, String color, String vin) {
+        this.id = -1;
         this.make = make;
         this.model = model;
         this.year = year;

@@ -8,4 +8,5 @@ public interface Dto {
     String getColor();
     String getVin();
 
+    void setId(int anInt);
 }

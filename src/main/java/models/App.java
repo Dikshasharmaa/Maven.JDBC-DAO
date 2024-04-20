@@ -10,9 +10,10 @@ public class App {
     public static void main(String[] args){
         DAO cDao = new DAO();
         List<CarDto> cars;
+//        System.out.println(cDao.findCount());
 
         System.out.println("----- Creating new Records-------");
-        cDao.create(new CarDto("Honda","Pilot",2010,"White","Cgher2324"));
+        cDao.create(new CarDto( "Honda","Pilot",2010,"White","Cgher2324"));
         cDao.create(new CarDto("Tesla","MY",2023,"White","ghtr5342jd"));
         cDao.create(new CarDto("BMW","X7",2023,"Black","ghrt3423edf"));
         System.out.println("Created new Records");
