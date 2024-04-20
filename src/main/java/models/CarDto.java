@@ -21,6 +21,13 @@ public class CarDto implements Dto {
         this.vin = vin;
     }
 
+    public CarDto(String make, String model, int year, String color, String vin) {
+        this.make = make;
+        this.model = model;
+        this.year = year;
+        this.color = color;
+        this.vin = vin;
+    }
 
     @Override
     public int getId() {

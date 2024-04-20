@@ -52,13 +52,13 @@ public class DAO implements Dao<Dto> {
 
     @Override
     public List findAll() {
+        ArrayList<CarDto> car = null;
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM Car ;");
-            ArrayList<CarDto> car = new ArrayList<>();
+            car = new ArrayList<>();
 
-            while (rs.next())
-            {
+            while (rs.next()) {
                 CarDto c = extractUserFromResultSet(rs);
                 car.add(c);
             }
@@ -67,7 +67,7 @@ public class DAO implements Dao<Dto> {
             ex.printStackTrace();
         }
 
-        return null;
+        return car;
     }
 
     @Override
@@ -89,24 +89,34 @@ public class DAO implements Dao<Dto> {
     @Override
     public Dto create(Dto dto) {
         try {
-            Statement stmt = conn.createStatement();
-            String sql = String.format("INSERT INTO Car (id, Make, Model, Year, Color, Vin) VALUES (?, ?,?,?, ?, ?);",dto.getId(), dto.getMake(),dto.getModel(),dto.getYear(),dto.getColor(), dto.getVin());
+            // Use PreparedStatement to avoid SQL injection and handle placeholders
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO Car (Make, Model, Year, Color, Vin) VALUES (?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
-            stmt.executeUpdate(sql);
+            // Set values for placeholders
+            //stmt.setInt(1,dto.getId());
+            stmt.setString(1,dto.getMake());
+            stmt.setString(2, dto.getModel());
+            stmt.setInt(3,dto.getYear());
+            stmt.setString(4,dto.getColor());
+            stmt.setString(5,dto.getVin());
 
-            ResultSet rs = stmt.getGeneratedKeys();
+            // Execute the update
+            int rowsInserted = stmt.executeUpdate();
 
-            if (rs.next())
-            {
-                return findById(rs.getInt(1));
+            if (rowsInserted > 0) {
+                // Retrieve the generated keys
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    // Assuming findById returns the same type as Dto
+                    return findById(rs.getInt(1));
+                }
             }
-        }
-        catch(SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     @Override
     public boolean delete(int id) {
